@@ -12,11 +12,20 @@ public class ReactiveTarget : MonoBehaviour {
         audioSource = GetComponent<AudioSource>();
     }
 
-    public void ReactToHit() {
-        StartCoroutine(Die());
-        PlayHitSound();
-        SpawnHitEffect();
+    public void ReactToHit()
+{
+    // Check if the game object has the WanderingAI component attached
+    BasicWanderingAI behavior = GetComponent<BasicWanderingAI>();
+
+    // If the WanderingAI component is found, set its alive state to false
+    if (behavior != null)
+    {
+        behavior.SetAlive(false);
     }
+    
+    // Start the coroutine to handle the death animation or cleanup
+    StartCoroutine(Die());
+}
 
     private IEnumerator Die() {
         this.transform.Rotate(-75, 0, 0);

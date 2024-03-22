@@ -67,7 +67,10 @@
     <Compile Include="Assets\Spin.cs" />
     <Compile Include="Assets\MouseLook.cs" />
     <Compile Include="Assets\ReactiveTarget.cs" />
+    <Compile Include="Assets\SceneController.cs" />
     <Compile Include="Assets\RayShooter.cs" />
+    <Compile Include="Assets\Fireball.cs" />
+    <Compile Include="Assets\PlayerCharacter.cs" />
     <Compile Include="Assets\FPSInput.cs" />
   </ItemGroup>
   <ItemGroup>

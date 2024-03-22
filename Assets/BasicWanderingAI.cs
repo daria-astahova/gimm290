@@ -2,29 +2,76 @@ using UnityEngine;
 
 public class BasicWanderingAI : MonoBehaviour
 {
-    public float moveSpeed = 3f; // Speed at which the AI moves
-    public float rotationSpeed = 100f; // Speed at which the AI rotates
-    public float raycastDistance = 2f; // Distance to cast rays for obstacle detection
+    public float speed = 3.0f;
+    public float obstacleRange = 5.0f;
+    public float raycastDistance = 10.0f; // Define raycast distance
+    public GameObject fireballPrefab; // Prefab for the fireball
+    private bool _alive;
+
+    void Start()
+    {
+        _alive = true;
+    }
 
     void Update()
     {
-        // Move the AI forward
-        transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
+        Debug.DrawRay(transform.position, transform.forward * raycastDistance, Color.red); // Draw ray with defined distance
 
-        // Check for obstacles
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, raycastDistance))
+        if (_alive)
         {
-            // Calculate the distance from the obstacle's collider
-            float distanceToCollider = hit.distance - 0.5f * transform.localScale.z; // Assuming the AI has a box collider
+            transform.Translate(0, 0, speed * Time.deltaTime);
+            // Perform obstacle avoidance
+            PerformObstacleAvoidance();
 
-            // Move away from the obstacle
-            Vector3 moveDirection = Quaternion.AngleAxis(45f, transform.up) * transform.forward; // Rotate 45 degrees to the right
-            Vector3 targetPosition = transform.position + moveDirection * distanceToCollider;
+            // Shoot fireball if player detected
+            ShootFireball();
+        }
+    }
 
-            // Rotate towards the target position
-            Quaternion targetRotation = Quaternion.LookRotation(targetPosition - transform.position);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+    public void SetAlive(bool alive)
+    {
+        _alive = alive;
+    }
+
+    void PerformObstacleAvoidance()
+    {
+        // Create a ray pointing forward from the AI's position
+        Ray ray = new Ray(transform.position, transform.forward);
+        RaycastHit hit;
+
+        // Perform a sphere cast to detect obstacles
+        if (Physics.SphereCast(ray, 0.75f, out hit))
+        {
+            if (hit.distance < obstacleRange)
+            {
+                // If an obstacle is detected within the obstacle range, turn away from it
+                float angle = Random.Range(-110, 110); // Generate a random angle
+                transform.Rotate(0, angle, 0); // Rotate the AI by the generated angle
+            }
+        }
+    }
+
+    void ShootFireball()
+    {
+        // Create a ray pointing forward from the AI's position
+        Ray ray = new Ray(transform.position, transform.forward);
+        RaycastHit hit;
+
+        // Perform a sphere cast to detect the player
+        if (Physics.SphereCast(ray, 0.75f, out hit))
+        {
+            GameObject hitObject = hit.transform.gameObject;
+            if (hitObject.GetComponent<PlayerCharacter>())
+            {
+                // Check if fireball is not already spawned
+                if (GameObject.FindGameObjectWithTag("Fireball") == null)
+                {
+                    // Instantiate the fireball prefab
+                    GameObject fireball = Instantiate(fireballPrefab, transform.position + transform.forward * 1.5f, transform.rotation);
+                    // Set the fireball's direction and speed
+                    fireball.GetComponent<Rigidbody>().velocity = transform.forward * 10.0f;
+                }
+            }
         }
     }
 }
