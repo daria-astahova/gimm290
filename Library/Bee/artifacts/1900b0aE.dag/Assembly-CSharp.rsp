@@ -355,6 +355,7 @@
 "Assets/BasicWanderingAI.cs"
 "Assets/Fireball.cs"
 "Assets/FPSInput.cs"
+"Assets/LevelTwo.cs"
 "Assets/MouseLook.cs"
 "Assets/PlayerCharacter.cs"
 "Assets/RayShooter.cs"
